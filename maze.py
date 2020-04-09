@@ -1,10 +1,12 @@
 import matplotlib.pyplot as plt
+from sys import exit
 
 class Map:
 
     def __init__(self):
         self.fig, self.ax = plt.subplots()
         self.ax.set(xlim=(-5.1, 5.1), ylim=(-5.1, 5.1))
+        self.ax.set_aspect('equal')
         self.MapSide = 10.2
 
     def DrawSquares(self,clr):
@@ -77,24 +79,28 @@ class Map:
     def InMap(self, point, clr):
         x = point[0]
         y = point[1]
-        if -5.1 <= x < 5.1 and -5.1 <= y < 5.1:
-            if ((x >= self.CenterCircleC[0] - self.Radius + clr) and (x <= self.CenterCircleC[0] + self.Radius + clr) and
-                    (y >= self.CenterCircleC[1] - self.Radius + clr) and (y <= self.CenterCircleC[1] + self.Radius + clr)):
+        
+        if x<-5 or x>5 or y<-5 or y>5:
+            print("point out of bounds")
+            return False
+        elif -5 < x < 5 and -5 < y < 5:
+            if ((x >= self.CenterCircleC[0] - (self.Radius + clr)) and (x <= self.CenterCircleC[0] + self.Radius + clr) and
+                    (y >= self.CenterCircleC[1] - (self.Radius + clr)) and (y <= self.CenterCircleC[1] + self.Radius + clr)):
                 if ((x) ** 2 + (y) ** 2) <= (self.Radius + clr) ** 2:
                     print("Circular obstacle")
                     return False
-            elif ((x >= self.TopCircleC[0] - self.Radius + clr) and (x <= self.TopCircleC[0] + self.Radius + clr) and
-                  (y >= self.TopCircleC[1] - self.Radius + clr) and (y <= self.TopCircleC[1] + self.Radius + clr)):
+            elif ((x >= self.TopCircleC[0] - (self.Radius + clr)) and (x <= self.TopCircleC[0] + self.Radius + clr) and
+                  (y >= self.TopCircleC[1] - (self.Radius + clr)) and (y <= self.TopCircleC[1] + self.Radius + clr)):
                 if ((x - 2) ** 2 + (y - 3) ** 2) <= (self.Radius + clr) ** 2:
                     print("Circular obstacle")
                     return False
-            elif ((x >= self.LeftCircleC[0] - self.Radius + clr) and (x <= self.LeftCircleC[0] + self.Radius + clr) and
-                  (y >= self.LeftCircleC[1] - self.Radius + clr) and (y <= self.LeftCircleC[1] + self.Radius + clr)):
+            elif ((x >= self.LeftCircleC[0] - (self.Radius + clr)) and (x <= self.LeftCircleC[0] + self.Radius + clr) and
+                  (y >= self.LeftCircleC[1] - (self.Radius + clr)) and (y <= self.LeftCircleC[1] + self.Radius + clr)):
                 if ((x + 2) ** 2 + (y + 3) ** 2) <= (self.Radius + clr) ** 2:
                     print("Circular obstacle")
                     return False
-            elif ((x >= self.RightCircleC[0] - self.Radius + clr) and (x <= self.RightCircleC[0] + self.Radius + clr) and
-                  (y >= self.RightCircleC[1] - self.Radius + clr) and (y <= self.RightCircleC[1] + self.Radius + clr)):
+            elif ((x >= self.RightCircleC[0] - (self.Radius + clr)) and (x <= self.RightCircleC[0] + self.Radius + clr) and
+                  (y >= self.RightCircleC[1] - (self.Radius + clr)) and (y <= self.RightCircleC[1] + self.Radius + clr)):
                 if ((x - 2) ** 2 + (y + 3) ** 2) <= (self.Radius + clr) ** 2:
                     print("Circular obstacle")
                     return False
@@ -110,20 +116,17 @@ class Map:
                 if ((y + 0.75 + clr >= 0) and (y - 0.75 - clr <= 0) and (x - 3.25 + clr >= 0) and (x - 4.75 - clr <= 0)):
                     print("Square obstacle")
                     return False
-            elif ((x >= -5.1) and (x <= -5) and (y >= -5.1) and (y <= -5) and (x >= 5) and (x <= 5.1) and (y >= 5) and (
-                    y <= 5.1)):
-                if ((y + 5 <= 0) and (y - 5 >= 0) and (x - 5 >= 0) and (x + 5 <= 0)):
-                    print("Boundary obstacle")
-                    return False
-        return True
-
+            return True
+            
     def get_user_nodes(self):
         # Enter the robot radius and clearance
         print("Please enter the clearance you want between the robot and the obstacles and the robot radius")
         self.rob_clr = float(input('Clearance: '))
         self.rob_rad = float(input('Robot Radius: '))
         self.clr = self.rob_clr + self.rob_rad
-
+        if self.clr>=0.25:
+            print("Invalid clearance and radius values, their sum must be lesser than 0.25")
+            self.get_user_nodes()
         self.DrawCircles(self.clr)
         self.DrawSquares(self.clr)
         plt.show()
@@ -139,8 +142,8 @@ class Map:
             pass
         else:
             print("The start point is not valid")
-            self.get_user_nodes()
             exit()
+            #self.get_user_nodes()
 
         print('Please enter a goal point (x,y)')
         goal_str_x = input('start x: ')
@@ -152,9 +155,9 @@ class Map:
             pass
         else:
             print("The goal point is not valid")
-            self.get_user_nodes()
             exit()
-
+            #self.get_user_nodes()
+            
         self.start = start_point
         self.goal = goal_point
 
