@@ -10,28 +10,68 @@ class Map:
     def DrawSquares(self,clr):
         self.BigSide = 10
         self.SmallSide = 1.5
+
         InnerSquare = plt.Rectangle((-5, -5), self.BigSide, self.BigSide, edgecolor = 'k', facecolor = "none")
         self.ax.add_patch(InnerSquare)
-        TopSquare = plt.Rectangle((-2.75, 2.25), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = "none")
+
+        TopSquareCl = plt.Rectangle((-2.75, 2.25), self.SmallSide + clr, self.SmallSide + clr, edgecolor = 'r', facecolor = 'r')
+        self.ax.add_patch(TopSquareCl)
+        TopSquareClr = plt.Rectangle((-1.25, 3.75), self.SmallSide + clr, self.SmallSide + clr, angle = 180, edgecolor = 'r', facecolor = 'r')
+        self.ax.add_patch(TopSquareClr)
+        TopSquareL = plt.Rectangle((-2.75, 3.75), clr, clr, angle=90, edgecolor='r', facecolor='r')
+        self.ax.add_patch(TopSquareL)
+        TopSquareR = plt.Rectangle((-1.25, 2.25), clr, clr, angle=270, edgecolor='r', facecolor='r')
+        self.ax.add_patch(TopSquareR)
+        TopSquare = plt.Rectangle((-2.75, 2.25), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = 'w')
         self.ax.add_patch(TopSquare)
-        LeftSquare = plt.Rectangle((-4.75, -0.75), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = "none")
+
+        LeftSquareCl = plt.Rectangle((-4.75, -0.75), self.SmallSide + clr, self.SmallSide + clr, edgecolor = 'r', facecolor = 'r')
+        self.ax.add_patch(LeftSquareCl)
+        LeftSquareClr = plt.Rectangle((-3.25, 0.75), self.SmallSide + clr, self.SmallSide + clr, angle = 180, edgecolor = 'r', facecolor = 'r')
+        self.ax.add_patch(LeftSquareClr)
+        LeftSquareL = plt.Rectangle((-4.75, 0.75), clr, clr, angle=90, edgecolor='r', facecolor='r')
+        self.ax.add_patch(LeftSquareL)
+        LeftSquareR = plt.Rectangle((-3.25, -0.75), clr, clr, angle=270, edgecolor='r', facecolor='r')
+        self.ax.add_patch(LeftSquareR)
+        LeftSquare = plt.Rectangle((-4.75, -0.75), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = 'w')
         self.ax.add_patch(LeftSquare)
-        RightSquare = plt.Rectangle((3.25, -0.75), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = "none")
+
+        RightSquareCl = plt.Rectangle((3.25, -0.75), self.SmallSide + clr, self.SmallSide + clr, edgecolor = 'r', facecolor = 'r')
+        self.ax.add_patch(RightSquareCl)
+        RightSquareClr = plt.Rectangle((4.75, 0.75), self.SmallSide + clr, self.SmallSide + clr, angle = 180, edgecolor = 'r', facecolor = 'r')
+        self.ax.add_patch(RightSquareClr)
+        RightSquareL = plt.Rectangle((3.25, 0.75), clr, clr, angle=90, edgecolor='r', facecolor='r')
+        self.ax.add_patch(RightSquareL)
+        RightSquareR = plt.Rectangle((4.75, -0.75), clr, clr, angle=270, edgecolor='r', facecolor='r')
+        self.ax.add_patch(RightSquareR)
+        RightSquare = plt.Rectangle((3.25, -0.75), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = 'w')
         self.ax.add_patch(RightSquare)
 
     def DrawCircles(self,clr):
         self.Radius = 1
+
         self.CenterCircleC  = (0,0)
-        CenterCircle = plt.Circle(self.CenterCircleC, self.Radius, edgecolor = 'k', facecolor = "none")
+        CenterCircleClr = plt.Circle(self.CenterCircleC, self.Radius + clr, edgecolor = 'r', facecolor = 'r')
+        self.ax.add_artist(CenterCircleClr)
+        CenterCircle = plt.Circle(self.CenterCircleC, self.Radius, edgecolor = 'k', facecolor = 'w')
         self.ax.add_artist(CenterCircle)
+
         self.TopCircleC = (2,3)
-        TopCircle = plt.Circle(self.TopCircleC, self.Radius, edgecolor = 'k', facecolor = "none")
+        TopCircleClr = plt.Circle(self.TopCircleC, self.Radius + clr, edgecolor = 'r', facecolor = 'r')
+        self.ax.add_artist(TopCircleClr)
+        TopCircle = plt.Circle(self.TopCircleC, self.Radius, edgecolor = 'k', facecolor = 'w')
         self.ax.add_artist(TopCircle)
+
         self.LeftCircleC = (-2,-3)
-        LeftCircle = plt.Circle(self.LeftCircleC, self.Radius, edgecolor = 'k', facecolor = "none")
+        LeftCircleClr = plt.Circle(self.LeftCircleC, self.Radius + clr, edgecolor='r', facecolor='r')
+        self.ax.add_artist(LeftCircleClr)
+        LeftCircle = plt.Circle(self.LeftCircleC, self.Radius, edgecolor = 'k', facecolor = 'w')
         self.ax.add_artist(LeftCircle)
+
         self.RightCircleC = (2,-3)
-        RightCircle = plt.Circle(self.RightCircleC, self.Radius, edgecolor = 'k', facecolor = "none")
+        RightCircleClr = plt.Circle(self.RightCircleC, self.Radius + clr, edgecolor='r', facecolor='r')
+        self.ax.add_artist(RightCircleClr)
+        RightCircle = plt.Circle(self.RightCircleC, self.Radius, edgecolor = 'k', facecolor = 'w')
         self.ax.add_artist(RightCircle)
 
     def InMap(self, point):
