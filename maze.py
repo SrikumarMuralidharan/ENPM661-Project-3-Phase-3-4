@@ -74,40 +74,40 @@ class Map:
         RightCircle = plt.Circle(self.RightCircleC, self.Radius, edgecolor = 'k', facecolor = 'w')
         self.ax.add_artist(RightCircle)
 
-    def InMap(self, point):
+    def InMap(self, point, clr):
         x = point[0]
         y = point[1]
         if -5.1 <= x < 5.1 and -5.1 <= y < 5.1:
-            if ((x >= self.CenterCircleC[0] - self.Radius) and (x <= self.CenterCircleC[0] + self.Radius) and
-                    (y >= self.CenterCircleC[1] - self.Radius) and (y <= self.CenterCircleC[1] + self.Radius)):
-                if ((x) ** 2 + (y) ** 2) <= self.Radius ** 2:
+            if ((x >= self.CenterCircleC[0] - self.Radius + clr) and (x <= self.CenterCircleC[0] + self.Radius + clr) and
+                    (y >= self.CenterCircleC[1] - self.Radius + clr) and (y <= self.CenterCircleC[1] + self.Radius + clr)):
+                if ((x) ** 2 + (y) ** 2) <= (self.Radius + clr) ** 2:
                     print("Circular obstacle")
                     return False
-            elif ((x >= self.TopCircleC[0] - self.Radius) and (x <= self.TopCircleC[0] + self.Radius) and
-                  (y >= self.TopCircleC[1] - self.Radius) and (y <= self.TopCircleC[1] + self.Radius)):
-                if ((x - 2) ** 2 + (y - 3) ** 2) <= self.Radius ** 2:
+            elif ((x >= self.TopCircleC[0] - self.Radius + clr) and (x <= self.TopCircleC[0] + self.Radius + clr) and
+                  (y >= self.TopCircleC[1] - self.Radius + clr) and (y <= self.TopCircleC[1] + self.Radius + clr)):
+                if ((x - 2) ** 2 + (y - 3) ** 2) <= (self.Radius + clr) ** 2:
                     print("Circular obstacle")
                     return False
-            elif ((x >= self.LeftCircleC[0] - self.Radius) and (x <= self.LeftCircleC[0] + self.Radius) and
-                  (y >= self.LeftCircleC[1] - self.Radius) and (y <= self.LeftCircleC[1] + self.Radius)):
-                if ((x + 2) ** 2 + (y + 3) ** 2) <= self.Radius ** 2:
+            elif ((x >= self.LeftCircleC[0] - self.Radius + clr) and (x <= self.LeftCircleC[0] + self.Radius + clr) and
+                  (y >= self.LeftCircleC[1] - self.Radius + clr) and (y <= self.LeftCircleC[1] + self.Radius + clr)):
+                if ((x + 2) ** 2 + (y + 3) ** 2) <= (self.Radius + clr) ** 2:
                     print("Circular obstacle")
                     return False
-            elif ((x >= self.RightCircleC[0] - self.Radius) and (x <= self.RightCircleC[0] + self.Radius) and
-                  (y >= self.RightCircleC[1] - self.Radius) and (y <= self.RightCircleC[1] + self.Radius)):
-                if ((x - 2) ** 2 + (y + 3) ** 2) <= self.Radius ** 2:
+            elif ((x >= self.RightCircleC[0] - self.Radius + clr) and (x <= self.RightCircleC[0] + self.Radius + clr) and
+                  (y >= self.RightCircleC[1] - self.Radius + clr) and (y <= self.RightCircleC[1] + self.Radius + clr)):
+                if ((x - 2) ** 2 + (y + 3) ** 2) <= (self.Radius + clr) ** 2:
                     print("Circular obstacle")
                     return False
-            elif ((x >= -2.75) and (x <= -1.25) and (y >= 2.25) and (y <= 3.75)):
-                if ((y - 2.25 >= 0) and (y - 3.75 <= 0) and (x + 2.75 >= 0) and (x + 1.25 <= 0)):
+            elif ((x >= (-2.75 - clr)) and (x <= (-1.25 + clr)) and (y >= (2.25 - clr)) and (y <= (3.75 + clr))):
+                if ((y - 2.25 + clr >= 0) and (y - 3.75 - clr <= 0) and (x + 2.75 + clr >= 0) and (x + 1.25 - clr <= 0)):
                     print("Square obstacle")
                     return False
-            elif ((x >= -4.75) and (x <= -3.25) and (y >= -0.75) and (y <= 0.75)):
-                if ((y + 0.75 >= 0) and (y - 0.75 <= 0) and (x + 4.75 >= 0) and (x + 3.25 <= 0)):
+            elif ((x >= (-4.75 - clr)) and (x <= -3.25 + clr) and (y >= -0.75 - clr) and (y <= 0.75 + clr)):
+                if ((y + 0.75 + clr >= 0) and (y - 0.75 - clr <= 0) and (x + 4.75 + clr >= 0) and (x + 3.25 - clr <= 0)):
                     print("Square obstable")
                     return False
-            elif ((x >= 3.25) and (x <= 4.75) and (y >= -0.75) and (y <= 0.75)):
-                if ((y + 0.75 >= 0) and (y - 0.75 <= 0) and (x - 3.25 >= 0) and (x - 4.75 <= 0)):
+            elif ((x >= 3.25 - clr) and (x <= 4.75 + clr) and (y >= -0.75 - clr) and (y <= 0.75 + clr)):
+                if ((y + 0.75 + clr >= 0) and (y - 0.75 - clr <= 0) and (x - 3.25 + clr >= 0) and (x - 4.75 - clr <= 0)):
                     print("Square obstacle")
                     return False
             elif ((x >= -5.1) and (x <= -5) and (y >= -5.1) and (y <= -5) and (x >= 5) and (x <= 5.1) and (y >= 5) and (
@@ -135,7 +135,7 @@ class Map:
         start_point = [(float(start_str_x), float(start_str_y)), int(start_str_theta)]
 
         # Check if start point is valid in maze
-        if self.InMap(start_point[0]):
+        if self.InMap(start_point[0], self.clr):
             pass
         else:
             print("The start point is not valid")
@@ -148,7 +148,7 @@ class Map:
         goal_point = (float(goal_str_x), float(goal_str_y))
 
         # Check if goal point is valid in maze
-        if self.InMap(goal_point):
+        if self.InMap(goal_point, self.clr):
             pass
         else:
             print("The goal point is not valid")
