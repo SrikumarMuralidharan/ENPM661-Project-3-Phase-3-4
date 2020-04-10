@@ -148,7 +148,7 @@ class Map:
             self.rpm2 = rpm2
         
         plt.grid()
-        plt.show()
+        # plt.show()
 
         
     def StartNode(self):
