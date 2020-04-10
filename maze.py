@@ -79,28 +79,28 @@ class Map:
     def InMap(self, point, clr):
         x = point[0]
         y = point[1]
-        
+
         if x<-5 or x>5 or y<-5 or y>5:
             print("point out of bounds")
             return False
         elif -5 < x < 5 and -5 < y < 5:
-            if ((x >= self.CenterCircleC[0] - (self.Radius + clr)) and (x <= self.CenterCircleC[0] + self.Radius + clr) and
-                    (y >= self.CenterCircleC[1] - (self.Radius + clr)) and (y <= self.CenterCircleC[1] + self.Radius + clr)):
+            if ((x >= self.CenterCircleC[0] - (self.Radius + clr)) and (x <= self.CenterCircleC[0] + (self.Radius + clr)) and
+                    (y >= self.CenterCircleC[1] - (self.Radius + clr)) and (y <= self.CenterCircleC[1] + (self.Radius + clr))):
                 if ((x) ** 2 + (y) ** 2) <= (self.Radius + clr) ** 2:
                     print("Circular obstacle")
                     return False
-            elif ((x >= self.TopCircleC[0] - (self.Radius + clr)) and (x <= self.TopCircleC[0] + self.Radius + clr) and
-                  (y >= self.TopCircleC[1] - (self.Radius + clr)) and (y <= self.TopCircleC[1] + self.Radius + clr)):
+            elif ((x >= self.TopCircleC[0] - (self.Radius + clr)) and (x <= self.TopCircleC[0] + (self.Radius + clr)) and
+                  (y >= self.TopCircleC[1] - (self.Radius + clr)) and (y <= self.TopCircleC[1] + (self.Radius + clr))):
                 if ((x - 2) ** 2 + (y - 3) ** 2) <= (self.Radius + clr) ** 2:
                     print("Circular obstacle")
                     return False
-            elif ((x >= self.LeftCircleC[0] - (self.Radius + clr)) and (x <= self.LeftCircleC[0] + self.Radius + clr) and
-                  (y >= self.LeftCircleC[1] - (self.Radius + clr)) and (y <= self.LeftCircleC[1] + self.Radius + clr)):
+            elif ((x >= self.LeftCircleC[0] - (self.Radius + clr)) and (x <= self.LeftCircleC[0] + (self.Radius + clr)) and
+                  (y >= self.LeftCircleC[1] - (self.Radius + clr)) and (y <= self.LeftCircleC[1] + (self.Radius + clr))):
                 if ((x + 2) ** 2 + (y + 3) ** 2) <= (self.Radius + clr) ** 2:
                     print("Circular obstacle")
                     return False
-            elif ((x >= self.RightCircleC[0] - (self.Radius + clr)) and (x <= self.RightCircleC[0] + self.Radius + clr) and
-                  (y >= self.RightCircleC[1] - (self.Radius + clr)) and (y <= self.RightCircleC[1] + self.Radius + clr)):
+            elif ((x >= self.RightCircleC[0] - (self.Radius + clr)) and (x <= self.RightCircleC[0] + (self.Radius + clr)) and
+                  (y >= self.RightCircleC[1] - (self.Radius + clr)) and (y <= self.RightCircleC[1] + (self.Radius + clr))):
                 if ((x - 2) ** 2 + (y + 3) ** 2) <= (self.Radius + clr) ** 2:
                     print("Circular obstacle")
                     return False
@@ -118,49 +118,60 @@ class Map:
                     return False
             return True
             
-    def get_user_nodes(self):
+    def GetUserNodes(self):
         # Enter the robot radius and clearance
         print("Please enter the clearance you want between the robot and the obstacles and the robot radius")
-        self.rob_clr = float(input('Clearance: '))
-        self.rob_rad = float(input('Robot Radius: '))
-        self.clr = self.rob_clr + self.rob_rad
-        if self.clr>=0.25:
+        self.RobClr = float(input('Clearance: '))
+        self.RobRad = float(input('Robot Radius: '))
+        self.clr = self.RobClr + self.RobRad
+        if self.clr >= 0.25:
             print("Invalid clearance and radius values, their sum must be lesser than 0.25")
-            self.get_user_nodes()
+            self.GetUserNodes()
         self.DrawCircles(self.clr)
         self.DrawSquares(self.clr)
         plt.show()
 
+    def StartNode(self):
         print('Please enter a start point (x,y,theta)')
-        start_str_x = input('start x: ')
-        start_str_y = input('start y: ')
-        start_str_theta = input('start theta:')
-        start_point = [(float(start_str_x), float(start_str_y)), int(start_str_theta)]
+        StartX = input('start x: ')
+        StartY = input('start y: ')
+        StartTheta = input('start theta: ')
+        self.StartPoint = [(float(StartX), float(StartY)), int(StartTheta)]
 
-        # Check if start point is valid in maze
-        if self.InMap(start_point[0], self.clr):
+        # Check if start point is valid in map
+        if self.InMap(self.StartPoint[0], self.clr):
             pass
+            # plt.plot(StartX, StartY, color='green', marker='o')
         else:
             print("The start point is not valid")
-            exit()
-            #self.get_user_nodes()
+            self.StartNode()
 
+    def GoalNode(self):
         print('Please enter a goal point (x,y)')
-        goal_str_x = input('start x: ')
-        goal_str_y = input('start y: ')
-        goal_point = (float(goal_str_x), float(goal_str_y))
+        GoalX = input('start x: ')
+        GoalY = input('start y: ')
+        self.GoalPoint = (float(GoalX), float(GoalY))
 
-        # Check if goal point is valid in maze
-        if self.InMap(goal_point, self.clr):
+        # Check if goal point is valid in map
+        if self.StartPoint[0] == self.GoalPoint:
+            print("Start and Goal points are the same")
+            self.GoalNode()
+        elif self.InMap(self.GoalPoint, self.clr):
             pass
         else:
             print("The goal point is not valid")
-            exit()
-            #self.get_user_nodes()
-            
-        self.start = start_point
-        self.goal = goal_point
+            self.GoalNode()
+
+        self.start = self.StartPoint
+        self.goal = self.GoalPoint
+
+        self.DrawCircles(self.clr)
+        self.DrawSquares(self.clr)
+        plt.show()
+
 
 if __name__ == '__main__':
     mymap = Map()
-    mymap.get_user_nodes()
+    mymap.GetUserNodes()
+    mymap.StartNode()
+    mymap.GoalNode()
