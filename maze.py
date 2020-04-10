@@ -120,17 +120,37 @@ class Map:
             
     def GetUserNodes(self):
         # Enter the robot radius and clearance
-        print("Please enter the clearance you want between the robot and the obstacles and the robot radius")
-        self.RobClr = float(input('Clearance: '))
-        self.RobRad = float(input('Robot Radius: '))
-        self.clr = self.RobClr + self.RobRad
+        print("Please enter the clearance you want between the robot and the obstacles")
+        self.rob_clr = float(input('Clearance: '))
+        self.rob_rad = 0.177
+        self.clr = self.rob_clr + self.rob_rad
         if self.clr >= 0.25:
             print("Invalid clearance and radius values, their sum must be lesser than 0.25")
             self.GetUserNodes()
         self.DrawCircles(self.clr)
         self.DrawSquares(self.clr)
+        self.StartNode()
+        self.GoalNode()
+        self.start = self.StartPoint
+        self.goal = self.GoalPoint
+        robot_circle=plt.Circle((self.StartPoint[0][0],self.StartPoint[0][1]), 0.177, color='orange')
+        self.ax.add_artist(robot_circle)
+        robot_circle_2=plt.Circle((self.GoalPoint[0],self.GoalPoint[1]), 0.177, color='black')
+        self.ax.add_artist(robot_circle_2)
+        
+        print('Enter 2 RPM values for the two wheels (note max speed is 100):')
+        rpm1 = float(input('rpm1 value: '))
+        rpm2 = float(input('rpm2 value: '))
+        if rpm1>100 or rpm2>100 or rpm1<0 or rpm2<0:
+            print('invlaid rpm values.')
+        else:
+            self.rpm1 = rpm1
+            self.rpm2 = rpm2
+        
+        plt.grid()
         plt.show()
 
+        
     def StartNode(self):
         print('Please enter a start point (x,y,theta)')
         StartX = input('start x: ')
@@ -148,30 +168,20 @@ class Map:
 
     def GoalNode(self):
         print('Please enter a goal point (x,y)')
-        GoalX = input('start x: ')
-        GoalY = input('start y: ')
+        GoalX = input('goal x: ')
+        GoalY = input('goal y: ')
         self.GoalPoint = (float(GoalX), float(GoalY))
 
         # Check if goal point is valid in map
-        if self.StartPoint[0] == self.GoalPoint:
-            print("Start and Goal points are the same")
-            self.GoalNode()
+        if ((self.StartPoint[0][0] - self.GoalPoint[0])**2 + (self.StartPoint[0][1] - self.GoalPoint[1])**2) < (0.5**2):
+            print("Start and Goal points are too close")
+            self.GetUserNodes()
         elif self.InMap(self.GoalPoint, self.clr):
             pass
         else:
             print("The goal point is not valid")
             self.GoalNode()
 
-        self.start = self.StartPoint
-        self.goal = self.GoalPoint
-
-        self.DrawCircles(self.clr)
-        self.DrawSquares(self.clr)
-        plt.show()
-
-
 if __name__ == '__main__':
     mymap = Map()
     mymap.GetUserNodes()
-    mymap.StartNode()
-    mymap.GoalNode()
