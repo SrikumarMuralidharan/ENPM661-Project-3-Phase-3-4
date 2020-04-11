@@ -8,20 +8,20 @@ from bisect import bisect_right
 class Robot:
     def __init__(self,maze):
         self.maze = maze
-        self.threshold = 0.1
         self.ang_thresh = 15
         
-        #robot parameters from datasheet
-        self.tb_rad = 0.177 #m
-        self.wheel_rad = 0.038 #m
-        self.Wheel_dist = 0.354 #m
+        #Burger robot parameters from http://emanual.robotis.com/docs/en/platform/turtlebot3/specifications/
+        self.pos_thresh = 0.1
+        self.tb_rad = 105 #m
+        self.wheel_rad = 33 #m
+        self.Wheel_dist = 160 #m
         self.dt = 0.1
-        self.r1 = self.maze.r1     #can go till 120mm/s
+        self.r1 = self.maze.r1    
         self.r2 = self.maze.r2
         
     def round_off_int(self, point):
-        x = (point[0][0] + 5)/self.threshold
-        y = (point[0][1] + 5)/self.threshold
+        x = (point[0][0] + 5000)*self.pos_thresh
+        y = (point[0][1] + 5000)*self.pos_thresh
         ang = point[1]
         x = int(round(x/2)*2)
         y = int(round(y/2)*2)
@@ -31,8 +31,8 @@ class Robot:
         new_point = ((x,y),ang)
         return new_point
         
-    def action_set(self,point,direction):
-        ang = math.radians(point[1])    
+    def action_set(self,point,direction,flag):
+        ang = 3.14*(point[1])/180    
         x = point[0][0]
         y = point[0][1]
         
@@ -76,29 +76,38 @@ class Robot:
             t= t + self.dt
             x_pre = n_x
             y_pre = n_y
-            n_x = n_x + ((u1+u2)*math.cos(ang)*(self.wheel_rad/2)*self.dt)  
-            n_y = n_y + ((u1+u2)*math.sin(ang)*(self.wheel_rad/2)*self.dt) 
+            n_x = x_pre + ((u1+u2)*math.cos(ang)*(self.wheel_rad/2)*self.dt)
+            n_y = y_pre + ((u1+u2)*math.sin(ang)*(self.wheel_rad/2)*self.dt)
+            
+            if not self.maze.InMap((n_x,n_y), self.maze.clr):
+                return point, -1
+            
             ang = ang + ((u2-u1)*(self.wheel_rad/self.Wheel_dist)*self.dt)
-            c = c + math.sqrt((n_x-x_pre)**2 + (n_y-y_pre)**2)                           
+            c = c + math.sqrt((n_x-x_pre)**2 + (n_y-y_pre)**2)
+            if flag==1:
+                plt.plot([x_pre, n_x], [y_pre, n_y], color='blue')
         
         n_ang = np.rad2deg(ang)
-        
         if n_ang>=360 or n_ang<0:
-            n_ang = n_ang%360       #always returns a positive number < 360
-            
+            n_ang = n_ang%360
         new_point = ((n_x, n_y), n_ang)
-        return new_point, c    
+        
+        if flag==0:
+            new_point = ((n_x, n_y), n_ang)
+            return new_point, c    
 
     def check_neighbors(self,cur_node):
         dires = ['ZF','FZ','FF','ZS','SZ', 'SS', 'FS', 'SF']
         neighbors = []
         costs=[]
+        direc = []
         for dire in dires:
-            new_point, cost = self.action_set(cur_node,dire)
-            if self.maze.InMap(new_point[0],self.maze.clr):
+            new_point, cost = self.action_set(cur_node,dire,0)
+            if self.maze.InMap(new_point[0],self.maze.clr) and cost!=-1:
                 neighbors.append(new_point)
                 costs.append(cost)
-        return neighbors, costs
+                direc.append(dire)
+        return neighbors, costs, direc
     
     def Cost2Go_calc(self, point, goal):
         dist = float(np.sqrt((point[0]-goal[0])**2 + (point[1]-goal[1])**2))
@@ -113,15 +122,16 @@ class Robot:
         #We use round off function only to represent as nodes of list
         round_stpt = self.round_off_int(start_point)
         self.nodes = []
+        self.direc = ['N']
         
         #for phase 3 our threshold value is now 0.1, so our size for cost2come and cost2go will be width/threshold = 102
-        self.visited_node = np.zeros((102,102,24))
+        self.visited_node = np.zeros((1020,1020,24))
         #Setting start_node as visited:
         self.visited_node[round_stpt[0][0]][round_stpt[0][1]][round_stpt[1]]=1
             
-        self.cost2come = np.full((102,102,24),np.inf)
-        self.cost2go = np.full((102,102,24),np.inf)
-        self.parents = np.full((102,102,24),np.nan, np.int64)
+        self.cost2come = np.full((1020,1020,24),np.inf)
+        self.cost2go = np.full((1020,1020,24),np.inf)
+        self.parents = np.full((1020,1020,24),np.nan, np.int64)
 
         self.nodes.append(start_point) #add the start node to nodes
         
@@ -135,7 +145,7 @@ class Robot:
         c2c = 0
         c2g = self.cost2go[round_stpt[0][0]][round_stpt[0][1]][round_stpt[1]]   #setting c2g to be the same as start_points c2g
         queue1 = [0]        #queue for index
-        queue2 = [c2c+c2g]  #queue forcost functions
+        queue2 = [c2c+c2g]  #queue for cost functions
         self.foundGoal = False
         
         while queue1:
@@ -150,7 +160,7 @@ class Robot:
             c2c = self.cost2come[round_cur[0][0]][round_cur[0][1]][round_cur[1]]
             
             #formulating neighbours around this location
-            neighbors, cost = self.check_neighbors(cur_node)
+            neighbors, cost, direc = self.check_neighbors(cur_node)
             
             for i, n in enumerate(neighbors):               
                 c2g=self.Cost2Go_calc(n[0],goal_point)
@@ -159,12 +169,15 @@ class Robot:
                 #condition to check for unvisited node
                 if self.visited_node[round_n[0][0]][round_n[0][1]][round_n[1]]==0:
                     self.nodes.append(n)
-                    # print('round value:')
-                    # print(round_n)
+                    self.direc.append(direc[i])
+                    print('node: ' + str(n))
+                    print('direc:' + str(direc[i]))
                     self.visited_node[round_n[0][0]][round_n[0][1]][round_n[1]]=1
                     self.cost2come[round_n[0][0]][round_n[0][1]][round_n[1]]= c2c+cost[i]
                     self.parents[round_n[0][0]][round_n[0][1]][round_n[1]]=parent
                     total_cost = c2c+cost[i]+c2g
+                    print('cost:' + str(total_cost))
+                    print('c2g:' + str(c2g))
                     
                     # In order to sort and insert based on cost, we use bisect.bisect_right() 
                     # to find position in queue and we get the location as output. We use this 
@@ -175,7 +188,7 @@ class Robot:
                     queue2.insert(loc, total_cost)
                                     
                    
-                if c2g<0.2:
+                if c2g<200:
                     print("entered")
                     self.foundGoal = True
                     queue1.clear()
@@ -195,13 +208,17 @@ class Robot:
             parent = int(self.parents[round_pnode[0][0]][round_pnode[0][1]][round_pnode[1]])    #Finding parent node index
             path_nodes.append(parent)   #attaching parent node index value
         self.path = [goal]      #creating list for path node points
+        self.path_dir = [self.direc[-1]]
         for ind in path_nodes:
             if ind == -1:       #progressing till start node is reached
                 break
             else:
                 self.path.insert(0,self.nodes[ind])     #inserting parent node at the start of list.
+                self.path_dir.insert(0,self.direc[ind])
         print('shortest path: ')
         print(self.path)
+        print('shortest path dir:')
+        print(self.path_dir)
         
     def Connect_points(self, startp, nextp):
         spx = startp[0][0]
@@ -214,7 +231,7 @@ class Robot:
         l2 = npy-spy
         connect = plt.Arrow(spx, spy, l1, l2, width= 0.1, color='black')
         return connect
-
+    
     def visualize(self,output,path_map):
         plt.ion()
         
@@ -226,23 +243,13 @@ class Robot:
             fps_out = 50
             out = cv2.VideoWriter(str(videoname)+".mp4", fourcc, fps_out, frame_size)
             print("Writing to Video, Please Wait")
-        
-        if path_map:
-            for n in self.nodes:
-                n_x = round(n[0][0]*10)/10
-                n_y = round(n[0][1]*10)/10
-                #creating a small circle for each explored node:
-                node_circle = plt.Circle((n_x, n_y), 0.005, edgecolor='green', facecolor='green')
-                self.maze.ax.add_artist(node_circle)
-                #plt.draw()
-                #plt.pause(0.1)
             
         #to draw the path taken from start to goal point:
         for i in range(len(self.path)-1):
             connect = self.Connect_points(self.path[i], self.path[i+1])
             self.maze.ax.add_artist(connect)
-            #plt.draw()
-            #plt.pause(0.00001)
+            plt.draw()
+            plt.pause(0.00001)
         
         plt.show()
         if output:

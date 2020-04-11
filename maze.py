@@ -5,41 +5,41 @@ class Map:
 
     def __init__(self):
         self.fig, self.ax = plt.subplots()
-        self.ax.set(xlim=(-5.1, 5.1), ylim=(-5.1, 5.1))
+        self.ax.set(xlim=(-5100, 5100), ylim=(-5100, 5100))
         self.ax.set_aspect('equal')
-        self.MapSide = 10.2
+        self.MapSide = 10200
 
     def DrawSquares(self,clr):
-        self.BigSide = 10
-        self.SmallSide = 1.5
+        self.BigSide = 10000
+        self.SmallSide = 1500
         
-        OuterSquare = plt.Rectangle((-5.1, -5.1), self.MapSide, self.MapSide, edgecolor = 'k', facecolor = "orange")
+        OuterSquare = plt.Rectangle((-5100, -5100), self.MapSide, self.MapSide, edgecolor = 'k', facecolor = "orange")
         self.ax.add_patch(OuterSquare)
-        InnerSquare = plt.Rectangle((-5, -5), self.BigSide, self.BigSide, edgecolor = 'k', facecolor = "w")
+        InnerSquare = plt.Rectangle((-5000, -5000), self.BigSide, self.BigSide, edgecolor = 'k', facecolor = "w")
         self.ax.add_patch(InnerSquare)
-        TopSquare = plt.Rectangle((-2.75, 2.25), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = 'orange')
+        TopSquare = plt.Rectangle((-2750, 2250), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = 'orange')
         self.ax.add_patch(TopSquare)
-        LeftSquare = plt.Rectangle((-4.75, -0.75), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = 'orange')
+        LeftSquare = plt.Rectangle((-4750, -750), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = 'orange')
         self.ax.add_patch(LeftSquare)
-        RightSquare = plt.Rectangle((3.25, -0.75), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = 'orange')
+        RightSquare = plt.Rectangle((3250, -750), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = 'orange')
         self.ax.add_patch(RightSquare)
 
     def DrawCircles(self,clr):
-        self.Radius = 1
+        self.Radius = 1000
 
         self.CenterCircleC  = (0,0)
         CenterCircle = plt.Circle(self.CenterCircleC, self.Radius, edgecolor = 'k', facecolor = 'orange')
         self.ax.add_artist(CenterCircle)
 
-        self.TopCircleC = (2,3)
+        self.TopCircleC = (2000,3000)
         TopCircle = plt.Circle(self.TopCircleC, self.Radius, edgecolor = 'k', facecolor = 'orange')
         self.ax.add_artist(TopCircle)
 
-        self.LeftCircleC = (-2,-3)
+        self.LeftCircleC = (-2000,-3000)
         LeftCircle = plt.Circle(self.LeftCircleC, self.Radius, edgecolor = 'k', facecolor = 'orange')
         self.ax.add_artist(LeftCircle)
 
-        self.RightCircleC = (2,-3)
+        self.RightCircleC = (2000,-3000)
         RightCircle = plt.Circle(self.RightCircleC, self.Radius, edgecolor = 'k', facecolor = 'orange')
         self.ax.add_artist(RightCircle)
 
@@ -47,10 +47,10 @@ class Map:
         x = point[0]
         y = point[1]
 
-        if x<-5 or x>5 or y<-5 or y>5:
+        if x<-5000 or x>5000 or y<-5000 or y>5000:
             print("point out of bounds")
             return False
-        elif -5 < x < 5 and -5 < y < 5:
+        elif -5000 < x < 5000 and -5000 < y < 5000:
             if ((x >= self.CenterCircleC[0] - (self.Radius + clr)) and (x <= self.CenterCircleC[0] + (self.Radius + clr)) and
                     (y >= self.CenterCircleC[1] - (self.Radius + clr)) and (y <= self.CenterCircleC[1] + (self.Radius + clr))):
                 if ((x) ** 2 + (y) ** 2) <= (self.Radius + clr) ** 2:
@@ -58,29 +58,29 @@ class Map:
                     return False
             elif ((x >= self.TopCircleC[0] - (self.Radius + clr)) and (x <= self.TopCircleC[0] + (self.Radius + clr)) and
                   (y >= self.TopCircleC[1] - (self.Radius + clr)) and (y <= self.TopCircleC[1] + (self.Radius + clr))):
-                if ((x - 2) ** 2 + (y - 3) ** 2) <= (self.Radius + clr) ** 2:
+                if ((x - 2000) ** 2 + (y - 3000) ** 2) <= (self.Radius + clr) ** 2:
                     print("Circular obstacle")
                     return False
             elif ((x >= self.LeftCircleC[0] - (self.Radius + clr)) and (x <= self.LeftCircleC[0] + (self.Radius + clr)) and
                   (y >= self.LeftCircleC[1] - (self.Radius + clr)) and (y <= self.LeftCircleC[1] + (self.Radius + clr))):
-                if ((x + 2) ** 2 + (y + 3) ** 2) <= (self.Radius + clr) ** 2:
+                if ((x + 2000) ** 2 + (y + 3000) ** 2) <= (self.Radius + clr) ** 2:
                     print("Circular obstacle")
                     return False
             elif ((x >= self.RightCircleC[0] - (self.Radius + clr)) and (x <= self.RightCircleC[0] + (self.Radius + clr)) and
                   (y >= self.RightCircleC[1] - (self.Radius + clr)) and (y <= self.RightCircleC[1] + (self.Radius + clr))):
-                if ((x - 2) ** 2 + (y + 3) ** 2) <= (self.Radius + clr) ** 2:
+                if ((x - 2000) ** 2 + (y + 3000) ** 2) <= (self.Radius + clr) ** 2:
                     print("Circular obstacle")
                     return False
-            elif ((x >= (-2.75 - clr)) and (x <= (-1.25 + clr)) and (y >= (2.25 - clr)) and (y <= (3.75 + clr))):
-                if ((y - 2.25 + clr >= 0) and (y - 3.75 - clr <= 0) and (x + 2.75 + clr >= 0) and (x + 1.25 - clr <= 0)):
+            elif ((x >= (-2750 - clr)) and (x <= (-1250 + clr)) and (y >= (2250 - clr)) and (y <= (3750 + clr))):
+                if ((y - 2250 + clr >= 0) and (y - 3750 - clr <= 0) and (x + 2750 + clr >= 0) and (x + 1250 - clr <= 0)):
                     print("Square obstacle")
                     return False
-            elif ((x >= (-4.75 - clr)) and (x <= -3.25 + clr) and (y >= -0.75 - clr) and (y <= 0.75 + clr)):
-                if ((y + 0.75 + clr >= 0) and (y - 0.75 - clr <= 0) and (x + 4.75 + clr >= 0) and (x + 3.25 - clr <= 0)):
+            elif ((x >= (-4750 - clr)) and (x <= -3250 + clr) and (y >= -750 - clr) and (y <= 750 + clr)):
+                if ((y + 750 + clr >= 0) and (y - 750 - clr <= 0) and (x + 4750 + clr >= 0) and (x + 3250 - clr <= 0)):
                     print("Square obstable")
                     return False
-            elif ((x >= 3.25 - clr) and (x <= 4.75 + clr) and (y >= -0.75 - clr) and (y <= 0.75 + clr)):
-                if ((y + 0.75 + clr >= 0) and (y - 0.75 - clr <= 0) and (x - 3.25 + clr >= 0) and (x - 4.75 - clr <= 0)):
+            elif ((x >= 3250 - clr) and (x <= 4750 + clr) and (y >= -750 - clr) and (y <= 750 + clr)):
+                if ((y + 750 + clr >= 0) and (y - 750 - clr <= 0) and (x - 250 + clr >= 0) and (x - 4750 - clr <= 0)):
                     print("Square obstacle")
                     return False
             return True
@@ -88,11 +88,11 @@ class Map:
     def GetUserNodes(self):
         # Enter the robot radius and clearance
         print("Please enter the clearance you want between the robot and the obstacles")
-        self.rob_clr = float(input('Clearance: '))
-        self.rob_rad = 0.177
+        self.rob_clr = float(input('Clearance (in mm): '))
+        self.rob_rad = 177
         self.clr = self.rob_clr + self.rob_rad
-        if self.clr >= 0.35:
-            print("Invalid clearance and radius values, their sum must be lesser than 0.35")
+        if self.clr >= 350:
+            print("Invalid clearance and radius values, their sum must be lesser than 350")
             self.GetUserNodes()
         self.DrawCircles(self.clr)
         self.DrawSquares(self.clr)
@@ -100,20 +100,21 @@ class Map:
         self.GoalNode()
         self.start = self.StartPoint
         self.goal = self.GoalPoint
-        robot_circle=plt.Circle((self.StartPoint[0][0],self.StartPoint[0][1]), 0.177, color='orange')
+        robot_circle=plt.Circle((self.StartPoint[0][0],self.StartPoint[0][1]), 105, color='black')
         self.ax.add_artist(robot_circle)
-        robot_circle_2=plt.Circle((self.GoalPoint[0],self.GoalPoint[1]), 0.2, color='black')
+        robot_circle_2=plt.Circle((self.GoalPoint[0],self.GoalPoint[1]), 200, color='green')
         self.ax.add_artist(robot_circle_2)
         
-        print('Enter 2 velocity values for the two wheels (note max speed is 120mm/s):')
-        ul = float(input('ul value (mm/s): '))
-        ur = float(input('ur value (mm/s): '))
-        if ul>120 or ur>100 or ul<0 or ur<0:
-            print('invlaid speed values.')
+        print('Enter 2 RPM values for the two wheels (note max RPM is 27RPM, as max rotational speed is 162.72 deg/s):')
+        ul = float(input('RPM1 value : '))
+        ur = float(input('RPM2 value : '))
+        if ul>27 or ur>27 or ul<0 or ur<0:
+            print('invlaid rpm values.')
         else:
-            self.r1 = ul
-            self.r2 = ur
-        
+            self.r1 = ul*0.1047*33     #converting to rad/s
+            self.r2 = ur*0.1047*33     #converting to rad/s
+            print('r1:' + str(self.r1))
+            print('r2:' + str(self.r2))
         plt.grid()
         # plt.show()
 
@@ -140,7 +141,7 @@ class Map:
         self.GoalPoint = (float(GoalX), float(GoalY))
 
         # Check if goal point is valid in map
-        if ((self.StartPoint[0][0] - self.GoalPoint[0])**2 + (self.StartPoint[0][1] - self.GoalPoint[1])**2) < (0.5**2):
+        if ((self.StartPoint[0][0] - self.GoalPoint[0])**2 + (self.StartPoint[0][1] - self.GoalPoint[1])**2) < (500**2):
             print("Start and Goal points are too close")
             self.GetUserNodes()
         elif self.InMap(self.GoalPoint, self.clr):
