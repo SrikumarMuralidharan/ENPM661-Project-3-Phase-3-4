@@ -15,9 +15,9 @@ class Robot:
         self.tb_rad = 0.177 #m
         self.wheel_rad = 0.038 #m
         self.Wheel_dist = 0.354 #m
-        self.dt = 0.2
-        self.r1 = self.maze.rpm1     #rpm
-        self.r2 = self.maze.rpm2     #rpm
+        self.dt = 0.1
+        self.r1 = self.maze.r1     #can go till 120mm/s
+        self.r2 = self.maze.r2
         
     def round_off_int(self, point):
         x = (point[0][0] + 5)/self.threshold
@@ -68,29 +68,26 @@ class Robot:
             u1=self.r2
             u2=self.r1
         
-        v_x = (u1+u2)*math.cos(ang)*(self.wheel_rad/2)
-        v_y = (u1+u2)*math.sin(ang)*(self.wheel_rad/2)
-        v_ang = (u2-u1)*self.wheel_rad/self.Wheel_dist
+        c = 0     #clearly we can use these components to generate cost
+        n_x = x
+        n_y = y
+        t=0
+        while t<1:
+            t= t + self.dt
+            x_pre = n_x
+            y_pre = n_y
+            n_x = n_x + ((u1+u2)*math.cos(ang)*(self.wheel_rad/2)*self.dt)  
+            n_y = n_y + ((u1+u2)*math.sin(ang)*(self.wheel_rad/2)*self.dt) 
+            ang = ang + ((u2-u1)*(self.wheel_rad/self.Wheel_dist)*self.dt)
+            c = c + math.sqrt((n_x-x_pre)**2 + (n_y-y_pre)**2)                           
         
-        d_x = v_x*self.dt
-        d_y = v_y*self.dt
-        d_ang = v_ang*self.dt
-        
-        dx = round(d_x*10)/10
-        dy = round(d_y*10)/10
-        cost = math.sqrt(dx**2 + dy**2)     #clearly we can use these components to generate cost
-        
-        n_ang = ang+d_ang
-        n_x = x+dx*math.cos(n_ang)
-        n_y = y+dy*math.sin(n_ang)
-        n_ang = np.rad2deg(n_ang)
+        n_ang = np.rad2deg(ang)
         
         if n_ang>=360 or n_ang<0:
             n_ang = n_ang%360       #always returns a positive number < 360
             
         new_point = ((n_x, n_y), n_ang)
-        return new_point, cost
-
+        return new_point, c    
 
     def check_neighbors(self,cur_node):
         dires = ['ZF','FZ','FF','ZS','SZ', 'SS', 'FS', 'SF']
@@ -108,12 +105,6 @@ class Robot:
         dist = round(dist*10)/10
         return dist
         
-    def Reached_Goal_Area(self, point, goal):
-        threshold_rad = 0.5
-        if ((point[0]-goal[0]) ** 2 + (point[1]-goal[1])**2 <= threshold_rad**2):
-            return True
-        return False
-        
     def A_Star(self):
               
         start_point = self.maze.start
@@ -124,13 +115,13 @@ class Robot:
         self.nodes = []
         
         #for phase 3 our threshold value is now 0.1, so our size for cost2come and cost2go will be width/threshold = 102
-        self.visited_node = np.zeros((120,120,24))
+        self.visited_node = np.zeros((102,102,24))
         #Setting start_node as visited:
         self.visited_node[round_stpt[0][0]][round_stpt[0][1]][round_stpt[1]]=1
             
-        self.cost2come = np.full((120,120,24),np.inf)
-        self.cost2go = np.full((120,120,24),np.inf)
-        self.parents = np.full((120,120,24),np.nan, np.int64)
+        self.cost2come = np.full((102,102,24),np.inf)
+        self.cost2go = np.full((102,102,24),np.inf)
+        self.parents = np.full((102,102,24),np.nan, np.int64)
 
         self.nodes.append(start_point) #add the start node to nodes
         
@@ -163,15 +154,11 @@ class Robot:
             
             for i, n in enumerate(neighbors):               
                 c2g=self.Cost2Go_calc(n[0],goal_point)
-                print('nei:')
-                print(n[0])
                 round_n = self.round_off_int(n)
             
                 #condition to check for unvisited node
                 if self.visited_node[round_n[0][0]][round_n[0][1]][round_n[1]]==0:
                     self.nodes.append(n)
-                    print('neighbor')
-                    print(n)
                     # print('round value:')
                     # print(round_n)
                     self.visited_node[round_n[0][0]][round_n[0][1]][round_n[1]]=1
@@ -247,15 +234,15 @@ class Robot:
                 #creating a small circle for each explored node:
                 node_circle = plt.Circle((n_x, n_y), 0.005, edgecolor='green', facecolor='green')
                 self.maze.ax.add_artist(node_circle)
-                # plt.draw()
-                # plt.pause(0.00001)
+                #plt.draw()
+                #plt.pause(0.1)
             
         #to draw the path taken from start to goal point:
         for i in range(len(self.path)-1):
             connect = self.Connect_points(self.path[i], self.path[i+1])
             self.maze.ax.add_artist(connect)
-            # plt.draw()
-            # plt.pause(0.00001)
+            #plt.draw()
+            #plt.pause(0.00001)
         
         plt.show()
         if output:

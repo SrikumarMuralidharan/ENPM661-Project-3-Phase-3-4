@@ -12,68 +12,35 @@ class Map:
     def DrawSquares(self,clr):
         self.BigSide = 10
         self.SmallSide = 1.5
-
-        InnerSquare = plt.Rectangle((-5, -5), self.BigSide, self.BigSide, edgecolor = 'k', facecolor = "none")
+        
+        OuterSquare = plt.Rectangle((-5.1, -5.1), self.MapSide, self.MapSide, edgecolor = 'k', facecolor = "orange")
+        self.ax.add_patch(OuterSquare)
+        InnerSquare = plt.Rectangle((-5, -5), self.BigSide, self.BigSide, edgecolor = 'k', facecolor = "w")
         self.ax.add_patch(InnerSquare)
-
-        TopSquareCl = plt.Rectangle((-2.75, 2.25), self.SmallSide + clr, self.SmallSide + clr, edgecolor = 'r', facecolor = 'r')
-        self.ax.add_patch(TopSquareCl)
-        TopSquareClr = plt.Rectangle((-1.25, 3.75), self.SmallSide + clr, self.SmallSide + clr, angle = 180, edgecolor = 'r', facecolor = 'r')
-        self.ax.add_patch(TopSquareClr)
-        TopSquareL = plt.Rectangle((-2.75, 3.75), clr, clr, angle=90, edgecolor='r', facecolor='r')
-        self.ax.add_patch(TopSquareL)
-        TopSquareR = plt.Rectangle((-1.25, 2.25), clr, clr, angle=270, edgecolor='r', facecolor='r')
-        self.ax.add_patch(TopSquareR)
-        TopSquare = plt.Rectangle((-2.75, 2.25), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = 'w')
+        TopSquare = plt.Rectangle((-2.75, 2.25), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = 'orange')
         self.ax.add_patch(TopSquare)
-
-        LeftSquareCl = plt.Rectangle((-4.75, -0.75), self.SmallSide + clr, self.SmallSide + clr, edgecolor = 'r', facecolor = 'r')
-        self.ax.add_patch(LeftSquareCl)
-        LeftSquareClr = plt.Rectangle((-3.25, 0.75), self.SmallSide + clr, self.SmallSide + clr, angle = 180, edgecolor = 'r', facecolor = 'r')
-        self.ax.add_patch(LeftSquareClr)
-        LeftSquareL = plt.Rectangle((-4.75, 0.75), clr, clr, angle=90, edgecolor='r', facecolor='r')
-        self.ax.add_patch(LeftSquareL)
-        LeftSquareR = plt.Rectangle((-3.25, -0.75), clr, clr, angle=270, edgecolor='r', facecolor='r')
-        self.ax.add_patch(LeftSquareR)
-        LeftSquare = plt.Rectangle((-4.75, -0.75), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = 'w')
+        LeftSquare = plt.Rectangle((-4.75, -0.75), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = 'orange')
         self.ax.add_patch(LeftSquare)
-
-        RightSquareCl = plt.Rectangle((3.25, -0.75), self.SmallSide + clr, self.SmallSide + clr, edgecolor = 'r', facecolor = 'r')
-        self.ax.add_patch(RightSquareCl)
-        RightSquareClr = plt.Rectangle((4.75, 0.75), self.SmallSide + clr, self.SmallSide + clr, angle = 180, edgecolor = 'r', facecolor = 'r')
-        self.ax.add_patch(RightSquareClr)
-        RightSquareL = plt.Rectangle((3.25, 0.75), clr, clr, angle=90, edgecolor='r', facecolor='r')
-        self.ax.add_patch(RightSquareL)
-        RightSquareR = plt.Rectangle((4.75, -0.75), clr, clr, angle=270, edgecolor='r', facecolor='r')
-        self.ax.add_patch(RightSquareR)
-        RightSquare = plt.Rectangle((3.25, -0.75), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = 'w')
+        RightSquare = plt.Rectangle((3.25, -0.75), self.SmallSide, self.SmallSide, edgecolor = 'k', facecolor = 'orange')
         self.ax.add_patch(RightSquare)
 
     def DrawCircles(self,clr):
         self.Radius = 1
 
         self.CenterCircleC  = (0,0)
-        CenterCircleClr = plt.Circle(self.CenterCircleC, self.Radius + clr, edgecolor = 'r', facecolor = 'r')
-        self.ax.add_artist(CenterCircleClr)
-        CenterCircle = plt.Circle(self.CenterCircleC, self.Radius, edgecolor = 'k', facecolor = 'w')
+        CenterCircle = plt.Circle(self.CenterCircleC, self.Radius, edgecolor = 'k', facecolor = 'orange')
         self.ax.add_artist(CenterCircle)
 
         self.TopCircleC = (2,3)
-        TopCircleClr = plt.Circle(self.TopCircleC, self.Radius + clr, edgecolor = 'r', facecolor = 'r')
-        self.ax.add_artist(TopCircleClr)
-        TopCircle = plt.Circle(self.TopCircleC, self.Radius, edgecolor = 'k', facecolor = 'w')
+        TopCircle = plt.Circle(self.TopCircleC, self.Radius, edgecolor = 'k', facecolor = 'orange')
         self.ax.add_artist(TopCircle)
 
         self.LeftCircleC = (-2,-3)
-        LeftCircleClr = plt.Circle(self.LeftCircleC, self.Radius + clr, edgecolor='r', facecolor='r')
-        self.ax.add_artist(LeftCircleClr)
-        LeftCircle = plt.Circle(self.LeftCircleC, self.Radius, edgecolor = 'k', facecolor = 'w')
+        LeftCircle = plt.Circle(self.LeftCircleC, self.Radius, edgecolor = 'k', facecolor = 'orange')
         self.ax.add_artist(LeftCircle)
 
         self.RightCircleC = (2,-3)
-        RightCircleClr = plt.Circle(self.RightCircleC, self.Radius + clr, edgecolor='r', facecolor='r')
-        self.ax.add_artist(RightCircleClr)
-        RightCircle = plt.Circle(self.RightCircleC, self.Radius, edgecolor = 'k', facecolor = 'w')
+        RightCircle = plt.Circle(self.RightCircleC, self.Radius, edgecolor = 'k', facecolor = 'orange')
         self.ax.add_artist(RightCircle)
 
     def InMap(self, point, clr):
@@ -124,8 +91,8 @@ class Map:
         self.rob_clr = float(input('Clearance: '))
         self.rob_rad = 0.177
         self.clr = self.rob_clr + self.rob_rad
-        if self.clr >= 0.25:
-            print("Invalid clearance and radius values, their sum must be lesser than 0.25")
+        if self.clr >= 0.35:
+            print("Invalid clearance and radius values, their sum must be lesser than 0.35")
             self.GetUserNodes()
         self.DrawCircles(self.clr)
         self.DrawSquares(self.clr)
@@ -135,17 +102,17 @@ class Map:
         self.goal = self.GoalPoint
         robot_circle=plt.Circle((self.StartPoint[0][0],self.StartPoint[0][1]), 0.177, color='orange')
         self.ax.add_artist(robot_circle)
-        robot_circle_2=plt.Circle((self.GoalPoint[0],self.GoalPoint[1]), 0.177, color='black')
+        robot_circle_2=plt.Circle((self.GoalPoint[0],self.GoalPoint[1]), 0.2, color='black')
         self.ax.add_artist(robot_circle_2)
         
-        print('Enter 2 RPM values for the two wheels (note max speed is 100):')
-        rpm1 = float(input('rpm1 value: '))
-        rpm2 = float(input('rpm2 value: '))
-        if rpm1>100 or rpm2>100 or rpm1<0 or rpm2<0:
-            print('invlaid rpm values.')
+        print('Enter 2 velocity values for the two wheels (note max speed is 120mm/s):')
+        ul = float(input('ul value (mm/s): '))
+        ur = float(input('ur value (mm/s): '))
+        if ul>120 or ur>100 or ul<0 or ur<0:
+            print('invlaid speed values.')
         else:
-            self.rpm1 = rpm1
-            self.rpm2 = rpm2
+            self.r1 = ul
+            self.r2 = ur
         
         plt.grid()
         # plt.show()
