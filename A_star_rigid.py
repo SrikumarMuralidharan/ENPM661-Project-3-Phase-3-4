@@ -2,7 +2,7 @@ from sys import exit
 from maze import Map
 from robot import Robot
 
-write_to_video = False
+write_to_video = True
 show_visualization = True
 
 mymap = Map()

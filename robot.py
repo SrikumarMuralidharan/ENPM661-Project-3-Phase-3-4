@@ -228,7 +228,8 @@ class Robot:
         print(self.path)
         print('shortest path dir:')
         print(self.path_dir)
-        
+        print('nodes' + str(len(self.nodes)))
+
     def Connect_points(self, startp, nextp):
         spx = startp[0][0]
         spy = startp[0][1]
@@ -255,21 +256,31 @@ class Robot:
             print("Writing to Video, Please Wait")
         
         if path_map:
-            for n in self.nodes:
-                n_x = round(n[0][0]*10)/10
-                n_y = round(n[0][1]*10)/10
-                #creating a small circle for each explored node:
-                node_circle = plt.Circle((n_x, n_y), 10, edgecolor='green', facecolor='green')
-                self.maze.ax.add_artist(node_circle)
+            #creating a small circle for each explored node:
+            row = int(len(self.nodes)/1000)
+            newlist = np.zeros((row+1, 1000, 2))
+            # newlist = np.array(self.nodes).reshape(row + 1, 1000, 2)
+            i = 0
+            for n in newlist:
+                for c in range(0,1000):
+                    if i < len(self.nodes):
+                        n[c] = self.nodes[i][0]
+                        # n[c][1] = self.nodes[i][0][1]
+                        i += 1
+                        n_x = round(n[c][0] * 10) / 10
+                        n_y = round(n[c][1] * 10) / 10
+                        node_circle = plt.Circle((n_x, n_y), 10, edgecolor='green', facecolor='green')
+                        self.maze.ax.add_artist(node_circle)
                 plt.draw()
-                #plt.pause(0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
-                
+                plt.pause(0.000000001)
+                self.maze.ax.add_artist(self.maze.robot_circle)
+
         #to draw the path taken from start to goal point:
         for i in range(len(self.path)-1):
             connect = self.Connect_points(self.path[i], self.path[i+1])
             self.maze.ax.add_artist(connect)
             plt.draw()
-            plt.pause(0.001)
+            plt.pause(0.0000001)
         
         plt.show()
         if output:

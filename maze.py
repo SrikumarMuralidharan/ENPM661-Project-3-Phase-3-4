@@ -101,8 +101,8 @@ class Map:
         self.GoalNode()
         self.start = self.StartPoint
         self.goal = self.GoalPoint
-        robot_circle=plt.Circle((self.StartPoint[0][0],self.StartPoint[0][1]), 105, color='black')
-        self.ax.add_artist(robot_circle)
+        self.robot_circle=plt.Circle((self.StartPoint[0][0],self.StartPoint[0][1]), 105, color='black')
+        self.ax.add_artist(self.robot_circle)
         robot_circle_2=plt.Circle((self.GoalPoint[0],self.GoalPoint[1]), 200, color='blue')
         self.ax.add_artist(robot_circle_2)
         
