@@ -1,8 +1,9 @@
+#!/usr/bin/env python
+
 from sys import exit
 from maze import Map
 from robot import Robot
 
-write_to_video = True
 show_visualization = True
 
 mymap = Map()
@@ -20,4 +21,4 @@ else:
     print('The goal could not be found')
     exit()
 # Visualize the path
-robot.visualize(write_to_video,show_visualization)
+robot.visualize(show_visualization)

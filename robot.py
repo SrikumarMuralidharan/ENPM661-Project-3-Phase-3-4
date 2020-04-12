@@ -1,10 +1,9 @@
-import cv2
+#!/usr/bin/env python
+
 import numpy as np
 import math
-import time
 import matplotlib.pyplot as plt 
 from bisect import bisect_right
-import os
 
 class Robot:
     def __init__(self,maze):
@@ -180,23 +179,22 @@ class Robot:
                     self.cost2come[round_n[0][0]][round_n[0][1]][round_n[1]]= c2c+cost[i]
                     self.parents[round_n[0][0]][round_n[0][1]][round_n[1]]=parent
                     self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]] = self.cost2come[round_n[0][0]][round_n[0][1]][round_n[1]]+c2g
-                    print('cost:' + str(self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]]))
                     print('c2g:' + str(c2g))    
-                    
-                elif self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]]>c2c+cost[i]+c2g:
-                    self.cost2come[round_n[0][0]][round_n[0][1]][round_n[1]]= c2c+cost[i]
-                    self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]]=c2c+cost[i]+c2g
-                    self.parents[round_n[0][0]][round_n[0][1]][round_n[1]]=parent
+                    # In order to sort and insert based on cost, we use bisect.bisect_right() 
+                    # to find position in queue and we get the location as output. We use this 
+                    # location to insert in both queues.
+                    loc = bisect_right(queue2, self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]])
+                    queue1.insert(loc, len(self.nodes)-1)
+                    queue2.insert(loc, self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]])
+                
+                #Had used this condition in the previous cases, but found to be not very useful in determining shortest path.
+                
+                # elif self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]]>c2c+cost[i]+c2g:
+                #     self.cost2come[round_n[0][0]][round_n[0][1]][round_n[1]]= c2c+cost[i]
+                #     self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]]=c2c+cost[i]+c2g
+                #     self.parents[round_n[0][0]][round_n[0][1]][round_n[1]]=parent
                     
                 
-                # In order to sort and insert based on cost, we use bisect.bisect_right() 
-                # to find position in queue and we get the location as output. We use this 
-                # location to insert in both queues.
-                    
-                
-                loc = bisect_right(queue2, self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]])
-                queue1.insert(loc, len(self.nodes)-1)
-                queue2.insert(loc, self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]])
                     
                 if c2g<200:
                     print("entered")
@@ -243,41 +241,9 @@ class Robot:
         connect = plt.Arrow(spx, spy, l1, l2, width= 0.1, color='black')
         return connect
     
-    def visualize(self,output,path_map):
-        #plt.ion()
+    def visualize(self,path_map):
         plt.grid()
         
-        if output:
-            video = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-            frame_size = (800, 800)
-            today = time.strftime("%m-%d__%H.%M.%S")
-            videoname=str(today)
-            fps_out = 50
-            out = cv2.VideoWriter(str(videoname)+".mp4", video, fps_out, frame_size)
-            print("Writing to Video...")
-            Frame = 'Frames'
-            if os.path.exists(Frame):
-                for img in os.listdir(Frame):
-                    if img.endswith('.png'):
-                        os.remove(video_images_path + '/' + img)
-            else:
-                os.mkdir(Frame)
-            '''if os.path.exists(Frame):
-                images = os.listdir(Frame)
-                images.sort()
-                print(images)
-                for img in xrange(len(images)):
-                    if img.endswith('.png'):
-                        plt.savefig(folder + "/file%02d.png" % img)
-                        os.chdir("your_folder")
-                        subprocess.call(['ffmpeg', '-framerate', '8', '-i', 'file%02d.png', '-r', '30', '-pix_fmt', 'yuv420p',
-                            'video_name.mp4'])
-                        for file_name in glob.glob("*.png"):
-                            os.remove(file_name)
-                        NewImage = cv2.imread(video_images_path + '/' + img)
-                        out.write(NewImage)
-            out.release()'''
-
         if path_map:
             #creating a small circle for each explored node:
             row = int(len(self.nodes)/1000)
@@ -306,5 +272,3 @@ class Robot:
             plt.pause(0.0000001)
         
         plt.show()
-        if output:
-            out.release()
