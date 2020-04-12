@@ -4,6 +4,7 @@ from sys import exit
 class Map:
 
     def __init__(self):
+        
         self.fig, self.ax = plt.subplots()
         self.ax.set(xlim=(-5100, 5100), ylim=(-5100, 5100))
         self.ax.set_aspect('equal')
@@ -47,10 +48,10 @@ class Map:
         x = point[0]
         y = point[1]
 
-        if x<-5000 or x>5000 or y<-5000 or y>5000:
+        if x<-(5000-clr) or x>(5000-clr) or y<-(5000-clr) or y>(5000-clr):
             print("point out of bounds")
             return False
-        elif -5000 < x < 5000 and -5000 < y < 5000:
+        elif -(5000-clr) < x < (5000-clr) and -(5000-clr) < y < (5000-clr):
             if ((x >= self.CenterCircleC[0] - (self.Radius + clr)) and (x <= self.CenterCircleC[0] + (self.Radius + clr)) and
                     (y >= self.CenterCircleC[1] - (self.Radius + clr)) and (y <= self.CenterCircleC[1] + (self.Radius + clr))):
                 if ((x) ** 2 + (y) ** 2) <= (self.Radius + clr) ** 2:
@@ -89,7 +90,7 @@ class Map:
         # Enter the robot radius and clearance
         print("Please enter the clearance you want between the robot and the obstacles")
         self.rob_clr = float(input('Clearance (in mm): '))
-        self.rob_rad = 177
+        self.rob_rad = 105
         self.clr = self.rob_clr + self.rob_rad
         if self.clr >= 350:
             print("Invalid clearance and radius values, their sum must be lesser than 350")
@@ -102,7 +103,7 @@ class Map:
         self.goal = self.GoalPoint
         robot_circle=plt.Circle((self.StartPoint[0][0],self.StartPoint[0][1]), 105, color='black')
         self.ax.add_artist(robot_circle)
-        robot_circle_2=plt.Circle((self.GoalPoint[0],self.GoalPoint[1]), 200, color='green')
+        robot_circle_2=plt.Circle((self.GoalPoint[0],self.GoalPoint[1]), 200, color='blue')
         self.ax.add_artist(robot_circle_2)
         
         print('Enter 2 RPM values for the two wheels (note max RPM is 27RPM, as max rotational speed is 162.72 deg/s):')
@@ -115,8 +116,6 @@ class Map:
             self.r2 = ur*0.1047*33     #converting to rad/s
             print('r1:' + str(self.r1))
             print('r2:' + str(self.r2))
-        plt.grid()
-        # plt.show()
 
         
     def StartNode(self):
@@ -129,7 +128,6 @@ class Map:
         # Check if start point is valid in map
         if self.InMap(self.StartPoint[0], self.clr):
             pass
-            # plt.plot(StartX, StartY, color='green', marker='o')
         else:
             print("The start point is not valid")
             self.StartNode()

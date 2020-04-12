@@ -86,7 +86,7 @@ class Robot:
             c = c + math.sqrt((n_x-x_pre)**2 + (n_y-y_pre)**2)
             if flag==1:
                 plt.plot([x_pre, n_x], [y_pre, n_y], color='blue')
-        
+                
         n_ang = np.rad2deg(ang)
         if n_ang>=360 or n_ang<0:
             n_ang = n_ang%360
@@ -131,6 +131,7 @@ class Robot:
             
         self.cost2come = np.full((1020,1020,24),np.inf)
         self.cost2go = np.full((1020,1020,24),np.inf)
+        self.total_cost = np.full((1020,1020,24),np.inf)
         self.parents = np.full((1020,1020,24),np.nan, np.int64)
 
         self.nodes.append(start_point) #add the start node to nodes
@@ -141,9 +142,11 @@ class Robot:
         self.parents[round_stpt[0][0]][round_stpt[0][1]][round_stpt[1]] = -1
         
         
-        #setting c2c and c2g values to be the same as start point values
+        #setting c2c and c2g and total_cost values to be the same as start point values
         c2c = 0
         c2g = self.cost2go[round_stpt[0][0]][round_stpt[0][1]][round_stpt[1]]   #setting c2g to be the same as start_points c2g
+        self.total_cost[round_stpt[0][0]][round_stpt[0][1]][round_stpt[1]]=c2c+c2g
+        
         queue1 = [0]        #queue for index
         queue2 = [c2c+c2g]  #queue for cost functions
         self.foundGoal = False
@@ -165,7 +168,7 @@ class Robot:
             for i, n in enumerate(neighbors):               
                 c2g=self.Cost2Go_calc(n[0],goal_point)
                 round_n = self.round_off_int(n)
-            
+                
                 #condition to check for unvisited node
                 if self.visited_node[round_n[0][0]][round_n[0][1]][round_n[1]]==0:
                     self.nodes.append(n)
@@ -175,19 +178,25 @@ class Robot:
                     self.visited_node[round_n[0][0]][round_n[0][1]][round_n[1]]=1
                     self.cost2come[round_n[0][0]][round_n[0][1]][round_n[1]]= c2c+cost[i]
                     self.parents[round_n[0][0]][round_n[0][1]][round_n[1]]=parent
-                    total_cost = c2c+cost[i]+c2g
-                    print('cost:' + str(total_cost))
-                    print('c2g:' + str(c2g))
+                    self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]] = self.cost2come[round_n[0][0]][round_n[0][1]][round_n[1]]+c2g
+                    print('cost:' + str(self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]]))
+                    print('c2g:' + str(c2g))    
                     
-                    # In order to sort and insert based on cost, we use bisect.bisect_right() 
-                    # to find position in queue and we get the location as output. We use this 
-                    # location to insert in both queues.
+                elif self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]]>c2c+cost[i]+c2g:
+                    self.cost2come[round_n[0][0]][round_n[0][1]][round_n[1]]= c2c+cost[i]
+                    self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]]=c2c+cost[i]+c2g
+                    self.parents[round_n[0][0]][round_n[0][1]][round_n[1]]=parent
                     
-                    loc = bisect_right(queue2, total_cost)
-                    queue1.insert(loc, len(self.nodes)-1)
-                    queue2.insert(loc, total_cost)
-                                    
-                   
+                
+                # In order to sort and insert based on cost, we use bisect.bisect_right() 
+                # to find position in queue and we get the location as output. We use this 
+                # location to insert in both queues.
+                    
+                
+                loc = bisect_right(queue2, self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]])
+                queue1.insert(loc, len(self.nodes)-1)
+                queue2.insert(loc, self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]])
+                    
                 if c2g<200:
                     print("entered")
                     self.foundGoal = True
@@ -233,7 +242,8 @@ class Robot:
         return connect
     
     def visualize(self,output,path_map):
-        plt.ion()
+        #plt.ion()
+        plt.grid()
         
         if output:
             fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
@@ -243,13 +253,23 @@ class Robot:
             fps_out = 50
             out = cv2.VideoWriter(str(videoname)+".mp4", fourcc, fps_out, frame_size)
             print("Writing to Video, Please Wait")
-            
+        
+        if path_map:
+            for n in self.nodes:
+                n_x = round(n[0][0]*10)/10
+                n_y = round(n[0][1]*10)/10
+                #creating a small circle for each explored node:
+                node_circle = plt.Circle((n_x, n_y), 10, edgecolor='green', facecolor='green')
+                self.maze.ax.add_artist(node_circle)
+                plt.draw()
+                #plt.pause(0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+                
         #to draw the path taken from start to goal point:
         for i in range(len(self.path)-1):
             connect = self.Connect_points(self.path[i], self.path[i+1])
             self.maze.ax.add_artist(connect)
             plt.draw()
-            plt.pause(0.00001)
+            plt.pause(0.001)
         
         plt.show()
         if output:
