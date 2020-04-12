@@ -4,6 +4,7 @@ import math
 import time
 import matplotlib.pyplot as plt 
 from bisect import bisect_right
+import os
 
 class Robot:
     def __init__(self,maze):
@@ -247,14 +248,36 @@ class Robot:
         plt.grid()
         
         if output:
-            fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
+            video = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
             frame_size = (800, 800)
             today = time.strftime("%m-%d__%H.%M.%S")
             videoname=str(today)
             fps_out = 50
-            out = cv2.VideoWriter(str(videoname)+".mp4", fourcc, fps_out, frame_size)
-            print("Writing to Video, Please Wait")
-        
+            out = cv2.VideoWriter(str(videoname)+".mp4", video, fps_out, frame_size)
+            print("Writing to Video...")
+            Frame = 'Frames'
+            if os.path.exists(Frame):
+                for img in os.listdir(Frame):
+                    if img.endswith('.png'):
+                        os.remove(video_images_path + '/' + img)
+            else:
+                os.mkdir(Frame)
+            '''if os.path.exists(Frame):
+                images = os.listdir(Frame)
+                images.sort()
+                print(images)
+                for img in xrange(len(images)):
+                    if img.endswith('.png'):
+                        plt.savefig(folder + "/file%02d.png" % img)
+                        os.chdir("your_folder")
+                        subprocess.call(['ffmpeg', '-framerate', '8', '-i', 'file%02d.png', '-r', '30', '-pix_fmt', 'yuv420p',
+                            'video_name.mp4'])
+                        for file_name in glob.glob("*.png"):
+                            os.remove(file_name)
+                        NewImage = cv2.imread(video_images_path + '/' + img)
+                        out.write(NewImage)
+            out.release()'''
+
         if path_map:
             #creating a small circle for each explored node:
             row = int(len(self.nodes)/1000)
