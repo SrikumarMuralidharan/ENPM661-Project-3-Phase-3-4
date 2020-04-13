@@ -102,10 +102,9 @@ class Robot:
         ang = float(3.14*(self.maze.StartPoint[1]/180))
         dang = float((r/L)*(v2-v1))
         nang = float(ang + dang)
-        nvx = float((r / 2) * (v1 + v2) * math.cos(nang))
-        nvy = float((r / 2) * (v1 + v2) * math.cos(nang))
+        nvx = float((r / 2) * (v1 + v2) * math.cos(ang))
+        nvy = float((r / 2) * (v1 + v2) * math.cos(ang))
         nv = float(math.sqrt(nvx** 2 + nvy** 2))
-        rang = float((180*nang)/3.14)
         return nv, dang
         
     def check_neighbors(self,cur_node):
@@ -224,8 +223,8 @@ class Robot:
                 self.path.insert(0,self.nodes[ind])     #inserting parent node at the start of list.
                 self.path_dir.insert(0,self.direc[ind])
         
-        # print('shortest path: ')
-        # print(self.path)
+        print('shortest path: ')
+        print(self.path)
         print('\nshortest path dir:')
         print(self.path_dir)
         print('no. of nodes: ' + str(len(self.nodes)))
@@ -306,5 +305,4 @@ class Robot:
             self.maze.ax.add_artist(connect)
             plt.draw()
         
-        plt.show()
-        
+        plt.show()        

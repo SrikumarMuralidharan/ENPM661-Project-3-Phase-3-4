@@ -114,8 +114,8 @@ class Map:
         if ul>27 or ur>27 or ul<0 or ur<0:
             print('invlaid rpm values.')
         else:
-            self.r1 = ul*0.1047*33     #converting to rad/s
-            self.r2 = ur*0.1047*33     #converting to rad/s
+            self.r1 = ul*0.1047*33     #converting to mm/s
+            self.r2 = ur*0.1047*33     #converting to mm/s
         
     def StartNode(self):
         print('Please enter a start point (x,y,theta)')

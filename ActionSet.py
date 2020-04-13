@@ -11,8 +11,8 @@ def action_set(point,direction,flag):
     y = point[0][1]
     Wheel_dist = 160 #m
     dt = 0.1
-    r1=69.10199999999999
-    r2=51.8265  
+    r2=69.10199999999999
+    r1=51.8265  
     if direction == 'ZF':    #[0,r1]    Z-Zero F-First S-Second
         u1 = 0
         u2 = r1
@@ -66,13 +66,13 @@ def action_set(point,direction,flag):
         ang = ang + ((u2-u1)*(wheel_rad/Wheel_dist)*dt)
         c = c + math.sqrt((n_x-x_pre)**2 + (n_y-y_pre)**2)
         if flag==1:
-            print('\nt: ' + str(t))
-            print('xpre :' + str(x_pre))
-            print('ypre: ' + str(y_pre))
-            print('n_x: ' + str(n_x))
-            print('n_y: ' + str(n_y))
-            print('ang:' + str(180*ang/3.14))
-            print('c: ' + str(c))
+            # print('\nt: ' + str(t))
+            # print('xpre :' + str(x_pre))
+            # print('ypre: ' + str(y_pre))
+            # print('n_x: ' + str(n_x))
+            # print('n_y: ' + str(n_y))
+            # print('ang:' + str(180*ang/3.14))
+            # print('c: ' + str(c))
             plt.plot([x_pre, n_x], [y_pre, n_y], color=col)
             
     
@@ -103,5 +103,5 @@ plt.grid()
 ax.set_aspect('equal')
 plt.xlim(-5000,5000)
 plt.ylim(-5000,5000)
-nei, c, d = check_neighbors(((-4800,-4800),45))
+nei, c, d = check_neighbors(((-4500,-3000),60))
 plt.show()

@@ -21,13 +21,19 @@ mymap.GetUserNodes()
 # Construct the robot
 robot = Robot(mymap)
 
-robot.A_Star()
+# c=read_file()
+# print('\nFrom file: ')   
+# print(c)
 
-c=read_file()
-print(c)
+
+robot.A_Star()
 
 if robot.foundGoal:
     robot.backtrack_path()
+    c=read_file()
+    print('\nFrom file: ')
+    print(c)
+
 else:
     print('The goal could not be found')
     exit()

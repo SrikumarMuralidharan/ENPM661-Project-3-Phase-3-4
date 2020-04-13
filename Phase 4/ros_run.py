@@ -5,7 +5,7 @@ from maze import Map
 from robot import Robot
 
 def read_file():
-    file = open('action.txt', "r")
+    file = open('/home/srikumar/sriku_ws/src/astar_imp/src/action.txt', "r")
     c = []
     lines = file.readlines()
     for i, line in enumerate(lines):
@@ -15,7 +15,7 @@ def read_file():
     return c
 
 #ros commands
-rospy.init_node('A_star_rigid', anonymous=True)
+rospy.init_node('ros_run', anonymous=True)
 velPub = rospy.Publisher('cmd_vel', Twist, queue_size=100)
 msg = Twist()
 
@@ -55,9 +55,9 @@ for action in ros:
             velPub.publish(msg)
             break
         else:
-            vel, th, F_theta = robot.ros_act(action[0],action[1])
-            msg.linear.x = vel*10
-            msg.angular.z =  th*10
+            vel, th = robot.ros_act(action[0],action[1])
+            msg.linear.x = vel*80
+            msg.angular.z =  th*50
             velPub.publish(msg)
             c=c+1
             r.sleep()
