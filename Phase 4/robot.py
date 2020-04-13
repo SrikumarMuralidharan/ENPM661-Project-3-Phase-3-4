@@ -84,9 +84,7 @@ class Robot:
             
             ang = ang + ((u2-u1)*(self.wheel_rad/self.Wheel_dist)*self.dt)
             c = c + math.sqrt((n_x-x_pre)**2 + (n_y-y_pre)**2)
-            if flag==1:
-                plt.plot([x_pre, n_x], [y_pre, n_y], color='blue')
-                
+
         n_ang = np.rad2deg(ang)
         if n_ang>=360 or n_ang<0:
             n_ang = n_ang%360
@@ -96,6 +94,20 @@ class Robot:
             new_point = ((n_x, n_y), n_ang)
             return new_point, c    
 
+    def ros_act(self,v1,v2):
+        r = 0.033
+        L = 0.16
+        v1 = float((v1/33)*r)
+        v2 = float((v2/33)*r)
+        ang = float(3.14*(self.maze.StartPoint[1]/180))
+        dang = float((r/L)*(v2-v1))
+        nang = float(ang + dang)
+        nvx = float((r / 2) * (v1 + v2) * math.cos(nang))
+        nvy = float((r / 2) * (v1 + v2) * math.cos(nang))
+        nv = float(math.sqrt(nvx** 2 + nvy** 2))
+        rang = float((180*nang)/3.14)
+        return nv, dang
+        
     def check_neighbors(self,cur_node):
         dires = ['ZF','FZ','FF','ZS','SZ', 'SS', 'FS', 'SF']
         neighbors = []
@@ -180,22 +192,10 @@ class Robot:
                     self.parents[round_n[0][0]][round_n[0][1]][round_n[1]]=parent
                     self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]] = self.cost2come[round_n[0][0]][round_n[0][1]][round_n[1]]+c2g
                     print('c2g:' + str(c2g))    
-                    # In order to sort and insert based on cost, we use bisect.bisect_right() 
-                    # to find position in queue and we get the location as output. We use this 
-                    # location to insert in both queues.
                     loc = bisect_right(queue2, self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]])
                     queue1.insert(loc, len(self.nodes)-1)
                     queue2.insert(loc, self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]])
-                
-                #Had used this condition in the previous cases, but found to be not very useful in determining shortest path.
-                
-                # elif self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]]>c2c+cost[i]+c2g:
-                #     self.cost2come[round_n[0][0]][round_n[0][1]][round_n[1]]= c2c+cost[i]
-                #     self.total_cost[round_n[0][0]][round_n[0][1]][round_n[1]]=c2c+cost[i]+c2g
-                #     self.parents[round_n[0][0]][round_n[0][1]][round_n[1]]=parent
-                    
-                
-                    
+                     
                 if c2g<200:
                     print("entered")
                     self.foundGoal = True
@@ -223,9 +223,10 @@ class Robot:
             else:
                 self.path.insert(0,self.nodes[ind])     #inserting parent node at the start of list.
                 self.path_dir.insert(0,self.direc[ind])
-        print('shortest path: ')
-        print(self.path)
-        print('shortest path dir:')
+        
+        # print('shortest path: ')
+        # print(self.path)
+        print('\nshortest path dir:')
         print(self.path_dir)
         print('no. of nodes: ' + str(len(self.nodes)))
         
@@ -234,9 +235,56 @@ class Robot:
             x = -(pa[0][0])/1000
             y = -(pa[0][1])/1000
             self.fake_path.append((x,y))
-        print('path in gazebo coordinates(for this map):')
+        print('path taken in gazebo coordinates:')
         print(self.fake_path)
+        self.path_to_action()
+        
+        
+    def path_to_action(self):
+        File_1=open("action.txt", "w+")
+        for pd in self.path_dir:
+            if pd == 'ZF':    #[0,r1]    Z-Zero F-First S-Second
+                u1 = 0
+                u2 = self.r1
+            
+            elif pd == 'FZ':     #[r1,0]
+                u1=self.r1
+                u2=0
+    
+            elif pd == 'FF':     #[r1,r1]
+                u1=self.r1
+                u2=self.r1
+    
+            elif pd == 'ZS':     #[0,r2]
+                u1=0
+                u2=self.r2
+            
+            elif pd == 'SZ':     #[r2,0]
+                u1=self.r2
+                u2=0
+            
+            elif pd == 'SS':     #[r2,r2]
+                u1=self.r2
+                u2=self.r2
 
+            elif pd == 'FS':     #[r1,r2]
+                u1=self.r1
+                u2=self.r2
+
+            elif pd == 'SF':     #[r2,r1]
+                u1=self.r2
+                u2=self.r1 
+            else:
+                u1=0
+                u2=0
+                
+            File_1.write(str(u1))
+            File_1.write(',')
+            File_1.write(str(u2))
+            File_1.write('\n')
+        File_1.close()
+                    
+    
     def Connect_points(self, startp, nextp):
         spx = startp[0][0]
         spy = startp[0][1]
@@ -249,34 +297,14 @@ class Robot:
         connect = plt.Arrow(spx, spy, l1, l2, width= 0.1, color='black')
         return connect
     
-    def visualize(self,path_map):
+    def visualize(self):
         plt.grid()
         
-        if path_map:
-            #creating a small circle for each explored node:
-            row = int(len(self.nodes)/1000)
-            newlist = np.zeros((row+1, 1000, 2))
-            # newlist = np.array(self.nodes).reshape(row + 1, 1000, 2)
-            i = 0
-            for n in newlist:
-                for c in range(0,1000):
-                    if i < len(self.nodes):
-                        n[c] = self.nodes[i][0]
-                        # n[c][1] = self.nodes[i][0][1]
-                        i += 1
-                        n_x = round(n[c][0] * 10) / 10
-                        n_y = round(n[c][1] * 10) / 10
-                        node_circle = plt.Circle((n_x, n_y), 10, edgecolor='green', facecolor='green')
-                        self.maze.ax.add_artist(node_circle)
-                plt.draw()
-                plt.pause(0.000000001)
-                self.maze.ax.add_artist(self.maze.robot_circle)
-
         #to draw the path taken from start to goal point:
         for i in range(len(self.path)-1):
             connect = self.Connect_points(self.path[i], self.path[i+1])
             self.maze.ax.add_artist(connect)
             plt.draw()
-            plt.pause(0.0000001)
         
         plt.show()
+        
